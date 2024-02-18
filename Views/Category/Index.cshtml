@@ -4,6 +4,11 @@
 <h2>Categories</h2>
 <hr/>
 
+@if (TempData["CategoryDeleted"] != null)
+{
+    <p class="text-success">@TempData["CategoryDeleted"]</p>
+}
+
 @if (!Model.Categories.Any())
 {
     <p>No category found</p>
@@ -25,6 +30,8 @@ else
                 <td>@category.DateAdded!.Value.ToShortDateString()</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@category.CategoryId">Details</a>
+                    <a asp-action="Edit" asp-route-id="@category.CategoryId">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@category.CategoryId">Delete</a>
                 </td>
             </tr>
         }
