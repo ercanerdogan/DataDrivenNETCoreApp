@@ -27,4 +27,16 @@ internal class CategoryRepository : ICategoryRepository
             .Include(p => p.Pies)
             .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
     }
+
+    public async Task<int> AddCategoryAsync(Category category)
+    {
+        if (await _context.Categories.AnyAsync(c => c.Name == category.Name))
+        {
+            throw new InvalidOperationException("Category already exists");
+        }
+
+        _context.Categories.Add(category);
+
+        return await _context.SaveChangesAsync();
+    }
 }

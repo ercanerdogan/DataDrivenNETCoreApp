@@ -6,6 +6,8 @@
     <title>Bethany's Pie Shop</title>
     <link href='https://fonts.googleapis.com/css?family=Work+Sans' rel='stylesheet' type='text/css'>
     <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.js"></script>
     <link href="~/css/site.css" rel="stylesheet" />
     <base href="/" />
@@ -82,6 +84,12 @@
                                             View all
                                         </a>
                                     </li>
+                                    <li>
+                                        <a asp-controller="Category" asp-action="Add" class="dropdown-item">
+                                            Add new category
+                                        </a>
+                                    </li>
+
                                     <li>
                                         <a asp-controller="Category" asp-action="BulkEdit" class="dropdown-item">
                                             Bulk edit

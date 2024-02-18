@@ -15,6 +15,7 @@ namespace BethanysPieShopAdmin.Models.Repositories
         {
             var pieList = await _context.Pies
                 .OrderBy(p => p.PieId)
+                .AsNoTracking()
                 .ToListAsync();
 
             return pieList;
@@ -25,10 +26,17 @@ namespace BethanysPieShopAdmin.Models.Repositories
             var pie = await _context.Pies
                 .Include(p => p.Ingredients)
                 .Include(p => p.Category)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.PieId == PieId);
 
 
             return pie;
+        }
+
+        public Task<int> AddPieAsync(Pie pie)
+        {
+            _context.Pies.Add(pie);
+            return _context.SaveChangesAsync();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using BethanysPieShopAdmin.Models.Repositories;
+﻿using BethanysPieShopAdmin.Models;
+using BethanysPieShopAdmin.Models.Repositories;
 using BethanysPieShopAdmin.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,6 +34,31 @@ namespace BethanysPieShopAdmin.Controllers
             if (category == null)
             {
                 return NotFound();
+            }
+
+            return View(category);
+        }
+
+        public IActionResult Add()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([Bind("Name, Description, DateAdded")] Category category)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _categoryRepository.AddCategoryAsync(category);
+                    return RedirectToAction(nameof(Index));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Adding category failed, please try again! Error : {ex.Message}");
             }
 
             return View(category);
