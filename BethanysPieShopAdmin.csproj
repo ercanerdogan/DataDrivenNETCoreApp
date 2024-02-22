@@ -17,6 +17,14 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Pie\SearchPies.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Pie\SearchPies.cshtml" />
+  </ItemGroup>
+
 
 
 </Project>

@@ -218,5 +218,32 @@ namespace BethanysPieShopAdmin.Controllers
             return View(new PagedList<Pie>(pies.ToList(), count, pageNumber.Value, pageSize));
         }
 
+        public async Task<IActionResult> SearchPies(string searchQuery, int? searchCategory)
+        {
+            var allCategories = await _categoryRepository.GetAllCategoriesAsync();
+            IEnumerable<SelectListItem> categoryList = new SelectList(allCategories, "CategoryId", "Name", null);
+
+            if (!string.IsNullOrEmpty(searchQuery) || searchCategory.HasValue)
+            {
+                var pies = await _pieRepository.SearchPiesAsync(searchQuery, searchCategory);
+
+                return View(new PieSearchViewModel
+                {
+                    Pies = pies,
+                    Categories = categoryList,
+                    SearchCategory = searchCategory,
+                    SearchQuery = searchQuery
+                });
+            }
+
+            return View(new PieSearchViewModel
+            {
+                Pies = new List<Pie>(),
+                Categories = categoryList,
+                SearchCategory = null,
+                SearchQuery = string.Empty
+            });
+        }
+
     }
 }
