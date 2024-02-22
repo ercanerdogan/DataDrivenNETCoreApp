@@ -4,10 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -15,33 +17,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Pie\Add.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Category\Add.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Category\Delete.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Category\Edit.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Pie\Add.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Pie\Edit.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Category\Add.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Category\Edit.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Pie\Edit.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Category\Delete.cshtml" />
-  </ItemGroup>
 
 
 </Project>

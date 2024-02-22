@@ -81,6 +81,47 @@ namespace BethanysPieShopAdmin.Models.Repositories
                 throw new InvalidOperationException("Pie to delete not found");
             }
         }
+
+        public async Task<int> GetAllPiesCountAsync()
+        {
+            return await _context.Pies.CountAsync();
+        }
+
+        public async Task<IEnumerable<Pie>> GetPiesPagedAsync(int? pageNumber, int pageSize)
+        {
+            IQueryable<Pie> pies = _context.Pies
+                .AsNoTracking();
+
+            pageNumber ??= 1;
+
+            return await pies
+                .Skip((pageNumber.Value - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Pie>> GetPiesSortedAndPagedAsync(string sortBy, int? pageNumber, int pageSize)
+        {
+            IQueryable<Pie> pies = _context.Pies.AsNoTracking();
+
+            pies = sortBy switch
+            {
+                "name_desc" => pies.OrderByDescending(p => p.Name),
+                "name" => pies.OrderBy(p => p.Name),
+                "id_desc" => pies.OrderByDescending(p => p.PieId),
+                "id" => pies.OrderBy(p => p.PieId),
+                "price_desc" => pies.OrderByDescending(p => p.Price),
+                "price" => pies.OrderBy(p => p.Price),
+                _ => pies
+            };
+
+            pageNumber ??= 1;
+
+            return await pies
+                .Skip((pageNumber.Value - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 
 }

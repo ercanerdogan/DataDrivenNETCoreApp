@@ -1,5 +1,6 @@
 ﻿using BethanysPieShopAdmin.Models;
 using BethanysPieShopAdmin.Models.Repositories;
+using BethanysPieShopAdmin.Utilities;
 using BethanysPieShopAdmin.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -188,5 +189,34 @@ namespace BethanysPieShopAdmin.Controllers
             var pieToDelete = await _pieRepository.GetPieByIdAsync(pieId.Value);
             return View(pieToDelete);
         }
+
+        private int pageSize = 5;
+
+        public async Task<IActionResult> IndexPaging(int? pageNumber)
+        {
+            var pies = await _pieRepository.GetPiesPagedAsync(pageNumber, pageSize);
+            pageNumber ??= 1;
+
+            var count = await _pieRepository.GetAllPiesCountAsync();
+
+            return View(new PagedList<Pie>(pies.ToList(), count, pageNumber.Value, pageSize));
+        }
+
+        public async Task<IActionResult> IndexPagingAndSorting(string sortBy, int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortBy;
+            ViewData["IdSortParam"] = string.IsNullOrEmpty(sortBy) || sortBy == "id_desc" ? "id" : "id_desc";
+            ViewData["NameSortParam"] = sortBy == "name" ? "name_desc" : "name";
+            ViewData["PriceSortParam"] = sortBy == "price" ? "price_desc" : "price";
+
+            pageNumber ??= 1;
+
+            var pies = await _pieRepository.GetPiesSortedAndPagedAsync(sortBy, pageNumber, pageSize);
+
+            var count = await _pieRepository.GetAllPiesCountAsync();
+
+            return View(new PagedList<Pie>(pies.ToList(), count, pageNumber.Value, pageSize));
+        }
+
     }
 }

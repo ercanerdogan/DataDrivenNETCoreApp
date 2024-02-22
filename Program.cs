@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddMvc().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<BethanyPieShopDbContext>(options =>
@@ -28,6 +29,7 @@ if (!app.Environment.IsDevelopment())
 else
 {
     app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
 }
 
 using (var scope = app.Services.CreateScope())
