@@ -22,7 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Category\BulkEdit.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Pie\SearchPies.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Category\BulkEdit.cshtml" />
   </ItemGroup>
 
 

@@ -9,7 +9,7 @@ internal class CategoryRepository : ICategoryRepository
     private readonly IMemoryCache _memoryCache;
     private const string AllCategoriesCacheKey = "allCategories";
 
-    public CategoryRepository(BethanyPieShopDbContext context, 
+    public CategoryRepository(BethanyPieShopDbContext context,
         IMemoryCache memoryCache)
     {
         _context = context;
@@ -56,7 +56,7 @@ internal class CategoryRepository : ICategoryRepository
 
         _context.Categories.Add(category);
 
-        _memoryCache.Remove(AllCategoriesCacheKey); // cache invalidation
+        InvalidateCache(); // cache invalidation
 
         return await _context.SaveChangesAsync();
     }
@@ -101,5 +101,30 @@ internal class CategoryRepository : ICategoryRepository
         {
             throw new InvalidOperationException("The category to delete can't be found");
         }
+    }
+
+    public async Task<int> UpdateCategoryNamesAsync(List<Category> categories)
+    {
+        foreach (var category in categories)
+        {
+            var categoryToUpdate = await GetCategoryByIdAsync(category.CategoryId);
+
+            if (categoryToUpdate != null)
+            {
+                categoryToUpdate.Name = category.Name;
+                _context.Categories.Update(categoryToUpdate);
+            }
+        }
+
+        var result = await _context.SaveChangesAsync();
+        InvalidateCache();
+
+        return result;
+
+    }
+
+    private void InvalidateCache()
+    {
+        _memoryCache.Remove(AllCategoriesCacheKey);
     }
 }
