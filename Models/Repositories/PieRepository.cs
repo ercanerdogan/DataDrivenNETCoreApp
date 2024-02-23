@@ -49,6 +49,7 @@ namespace BethanysPieShopAdmin.Models.Repositories
             var pieToUpdate = await _context.Pies.FirstOrDefaultAsync(p => p.PieId == pie.PieId);
             if (pieToUpdate != null)
             {
+                _context.Entry(pieToUpdate).Property("RowVersion").OriginalValue = pie.RowVersion;
                 pieToUpdate.Name = pie.Name;
                 pieToUpdate.Price = pie.Price;
                 pieToUpdate.ShortDescription = pie.ShortDescription;

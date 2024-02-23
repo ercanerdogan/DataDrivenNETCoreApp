@@ -4,6 +4,7 @@ using BethanysPieShopAdmin.Utilities;
 using BethanysPieShopAdmin.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace BethanysPieShopAdmin.Controllers
 {
@@ -131,8 +132,16 @@ namespace BethanysPieShopAdmin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(PieViewModel pieViewModel)
         {
+            var pieToUpdate = await _pieRepository.GetPieByIdAsync(pieViewModel.Pie.PieId);
+
             try
             {
+                if (pieToUpdate == null)
+                {
+                    ModelState.AddModelError(string.Empty, "The pie you want to update " +
+                                                           "doesn't exist or was already deleted by another user");
+                }
+
                 if (ModelState.IsValid)
                 {
                     await _pieRepository.UpdatePieAsync(pieViewModel.Pie);
@@ -143,6 +152,71 @@ namespace BethanysPieShopAdmin.Controllers
                     return BadRequest();
                 }
             }
+            catch (DbUpdateConcurrencyException dbUpdateEx)
+            {
+                var exceptionPie = dbUpdateEx.Entries.Single();
+                var clientValues = (Pie)exceptionPie.Entity;
+                var databaseEntry = exceptionPie.GetDatabaseValues();
+
+                if (databaseEntry == null)
+                {
+                    ModelState.AddModelError(string.Empty, "The pie was already deleted by another user.");
+                }
+                else
+                {
+                    var databaseValues = (Pie)databaseEntry.ToObject();
+
+                    if (databaseValues.Name != clientValues.Name)
+                    {
+                        ModelState.AddModelError("Pie.Name", $"Current value: {databaseValues.Name}");
+                    }
+
+                    if (databaseValues.Price != clientValues.Price)
+                    {
+                        ModelState.AddModelError("Pie.Price", $"Current value: {databaseValues.Price}");
+                    }
+
+                    if (databaseValues.ShortDescription != clientValues.ShortDescription)
+                    {
+                        ModelState.AddModelError("Pie.ShortDescription", $"Current value: {databaseValues.ShortDescription}");
+                    }
+
+                    if (databaseValues.LongDescription != clientValues.LongDescription)
+                    {
+                        ModelState.AddModelError("Pie.LongDescription", $"Current value: {databaseValues.LongDescription}");
+                    }
+
+                    if (databaseValues.AllergyInformation != clientValues.AllergyInformation)
+                    {
+                        ModelState.AddModelError("Pie.AllergyInformation", $"Current value: {databaseValues.AllergyInformation}");
+                    }
+
+                    if (databaseValues.ImageThumbnailUrl != clientValues.ImageThumbnailUrl)
+                    {
+                        ModelState.AddModelError("Pie.ImageThumbnailUrl", $"Current value: {databaseValues.ImageThumbnailUrl}");
+                    }
+                    if (databaseValues.ImageUrl != clientValues.ImageUrl)
+                    {
+                        ModelState.AddModelError("Pie.ImageUrl", $"Current value: {databaseValues.ImageUrl}");
+                    }
+                    if (databaseValues.IsPieOfTheWeek != clientValues.IsPieOfTheWeek)
+                    {
+                        ModelState.AddModelError("Pie.IsPieOfTheWeek", $"Current value: {databaseValues.IsPieOfTheWeek}");
+                    }
+                    if (databaseValues.InStock != clientValues.InStock)
+                    {
+                        ModelState.AddModelError("Pie.InStock", $"Current value: {databaseValues.InStock}");
+                    }
+                    if (databaseValues.CategoryId != clientValues.CategoryId)
+                    {
+                        ModelState.AddModelError("Pie.CategoryId", $"Current value: {databaseValues.CategoryId}");
+                    }
+
+                    ModelState.AddModelError(string.Empty, "The record was modified by another user. Database values are shown.");
+                    ModelState.Remove("Pie.RowVersion");
+                }
+            }
+
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"Updating pie failed, please try again! Error : {ex.Message}");
@@ -178,7 +252,7 @@ namespace BethanysPieShopAdmin.Controllers
                 await _pieRepository.DeletePieAsync(pieId.Value);
 
                 TempData["PieDeleted"] = "Pie has been deleted successfully!";
-                
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

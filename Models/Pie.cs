@@ -26,4 +26,6 @@ public class Pie
     public int CategoryId { get; set; }
     public Category? Category { get; set; }
     public ICollection<Ingredient>? Ingredients { get; set; }
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
 }
