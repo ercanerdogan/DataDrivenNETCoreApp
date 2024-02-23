@@ -1,14 +1,19 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BethanysPieShopAdmin.Models.Repositories;
 
 internal class CategoryRepository : ICategoryRepository
 {
     private readonly BethanyPieShopDbContext _context;
+    private readonly IMemoryCache _memoryCache;
+    private const string AllCategoriesCacheKey = "allCategories";
 
-    public CategoryRepository(BethanyPieShopDbContext context)
+    public CategoryRepository(BethanyPieShopDbContext context, 
+        IMemoryCache memoryCache)
     {
         _context = context;
+        _memoryCache = memoryCache;
     }
 
     public IEnumerable<Category> GetAllCategories()
@@ -18,7 +23,21 @@ internal class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
     {
-        return await _context.Categories.OrderBy(c => c.CategoryId).ToListAsync();
+        List<Category> categories;
+
+        if (!_memoryCache.TryGetValue(AllCategoriesCacheKey, out categories))
+        {
+            categories = await _context.Categories.OrderBy(c => c.CategoryId).ToListAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(60)
+            };
+
+            _memoryCache.Set(AllCategoriesCacheKey, categories, cacheEntryOptions);
+        }
+
+        return categories;
     }
 
     public async Task<Category> GetCategoryByIdAsync(int categoryId)
@@ -36,6 +55,8 @@ internal class CategoryRepository : ICategoryRepository
         }
 
         _context.Categories.Add(category);
+
+        _memoryCache.Remove(AllCategoriesCacheKey); // cache invalidation
 
         return await _context.SaveChangesAsync();
     }
